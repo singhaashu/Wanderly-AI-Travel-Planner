@@ -12,7 +12,7 @@ client = TavilyClient(api_key=TAVILY_APIKEY)
 def tavily_client(query):
     results=[]
     response=client.search(
-        query="Best hotels in Dubai",
+        query=query,
         max_result=5
     )
 
