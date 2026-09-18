@@ -1,0 +1,36 @@
+# Environment
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local databases / generated files
+*.db
+*.sqlite
+*.sqlite3
+
+# Vector stores / generated data
+vector_db/
+faiss_index/
+
+# Secrets
+secrets/
