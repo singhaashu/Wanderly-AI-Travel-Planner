@@ -21,7 +21,8 @@ GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_APIKEY"))
 
 llm =ChatGroq(
     model="openai/gpt-oss-20b",
-    api_key=GROQ_API_KEY
+    api_key=GROQ_API_KEY,
+    max_tokens=1000
 )
 
 class TravelState(TypedDict):
