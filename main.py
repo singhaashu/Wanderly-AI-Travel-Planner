@@ -1,6 +1,7 @@
 import os
 from typing import TypedDict, Annotated
 import operator
+from datetime import date, timedelta
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import (
     AnyMessage,
@@ -10,14 +11,18 @@ from langchain_core.messages import (
 )
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_groq import ChatGroq
-
+from schema.flight_schema import FlightDetails
 from tools.searching_service import tavily_client
 from tools.search_flight import search_flight
 import streamlit as st
 from dotenv import load_dotenv
 load_dotenv()
 
-GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_APIKEY"))
+
+GROQ_API_KEY=os.getenv("GROQ_APIKEY")
+
+if not GROQ_API_KEY:
+    GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
 
 llm =ChatGroq(
     model="openai/gpt-oss-20b",
@@ -35,8 +40,35 @@ class TravelState(TypedDict):
 # flight agent 
 
 def flight_agent(state:TravelState):
+
     query=state["user_query"]    
-    flight_data=search_flight(query)
+    
+    flight_parser=llm.with_structured_output(FlightDetails)
+
+    # flight_data=search_flight(query)
+    flight_details = flight_parser.invoke(
+        f"""
+        Extract:
+    - origin (IATA code)
+    - destination (IATA code)
+    - departure_date (YYYY-MM-DD if available)
+    - return_date (YYYY-MM-DD if available)
+
+        User request:
+        {query}
+
+        Convert city names to their IATA airport codes.
+        Return the travel date as YYYY-MM-DD.
+        """
+    )
+   
+
+    flight_data = search_flight(
+    origin=flight_details.origin,
+    destination=flight_details.destination,
+    date=flight_details.departure_date,
+    return_date=flight_details.return_date,
+     )
 
     return {
         "flight_results":flight_data,

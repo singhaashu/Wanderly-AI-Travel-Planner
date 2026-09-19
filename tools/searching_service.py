@@ -4,7 +4,11 @@ import streamlit as st
 from  dotenv import load_dotenv
 load_dotenv()
 
-TAVILY_APIKEY = st.secrets.get("TAVILY_APIKEY", os.getenv("TAVILY_APIKEY"))
+TAVILY_APIKEY=os.getenv("TAVILY_APIKEY")
+
+if not TAVILY_APIKEY:
+    TAVILY_APIKEY=st.secrets.get("TAVILY_APIKEY")
+
 client = TavilyClient(api_key=TAVILY_APIKEY)
 
 # response = tavily_client.search("Who is Leo Messi?")
